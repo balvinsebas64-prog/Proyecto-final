@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Venta exitosa')}"></head>
+<body class="admin-layout"><aside th:replace="~{fragments/sidebar :: sidebar('ventas')}"></aside><div class="admin-shell">
+    <header th:replace="~{fragments/navbar :: cajeroNavbar}"></header>
+    <main class="admin-content">
+        <section class="card mx-auto" style="max-width: 640px;" aria-labelledby="exito-title">
+            <div class="card-body p-4 p-md-5 text-center">
+                <i class="fa-solid fa-circle-check text-success display-3 mb-4" aria-hidden="true"></i>
+                <h1 id="exito-title">Venta exitosa</h1>
+                <p class="text-secondary">La venta fue registrada y el stock actualizado.</p>
+                <dl class="row text-start border rounded-3 p-3 my-4 g-2">
+                    <dt class="col-6">N.º de venta</dt><dd class="col-6" th:text="${venta.id}"></dd>
+                    <dt class="col-6">Fecha</dt><dd class="col-6" th:text="${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm')}"></dd>
+                    <dt class="col-6">Método de pago</dt><dd class="col-6" th:text="${venta.metodoPago}"></dd>
+                    <dt class="col-6">Total</dt><dd class="col-6 fw-bold" th:text="|S/ ${#numbers.formatDecimal(venta.total, 1, 'COMMA', 2, 'POINT')}|"></dd>
+                </dl>
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <a class="btn btn-primary" th:href="@{/ventas/nueva}">Nueva venta</a>
+                    <a class="btn btn-outline-secondary" th:href="@{/cajero/dashboard}">Volver al inicio</a>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>
+

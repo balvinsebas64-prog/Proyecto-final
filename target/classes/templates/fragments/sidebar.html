@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<aside th:fragment="sidebar(activo)" sec:authorize="isAuthenticated()" class="offcanvas-lg offcanvas-start admin-sidebar" tabindex="-1" id="sidebar" aria-labelledby="sidebar-title">
+    <div class="offcanvas-header border-bottom border-secondary">
+        <a id="sidebar-title" class="sidebar-brand" th:href="@{/}"><span class="brand-mark" aria-hidden="true">POS</span> Sistema POS</a>
+        <button type="button" class="btn-close btn-close-white d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Cerrar menú"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column p-3">
+        <div class="user-panel d-flex align-items-center gap-3 pb-3 mb-3">
+            <i class="fa-solid fa-circle-user fs-2" aria-hidden="true"></i>
+            <div class="overflow-hidden"><small class="d-block text-white-50">Sesión iniciada</small><span class="d-block text-truncate" sec:authentication="name">Usuario</span></div>
+        </div>
+        <nav aria-label="Navegación principal" class="nav nav-pills flex-column gap-2">
+            <a sec:authorize="hasRole('ADMIN')" class="nav-link" th:classappend="${activo == 'inicio' or activo == 'admin'} ? 'active'" th:attr="aria-current=${activo == 'inicio' or activo == 'admin' ? 'page' : null}" th:href="@{/admin/dashboard}"><i class="fa-solid fa-house" aria-hidden="true"></i> Inicio</a>
+            <a sec:authorize="hasRole('ADMIN')" class="nav-link" th:classappend="${activo == 'inventario'} ? 'active'" th:attr="aria-current=${activo == 'inventario' ? 'page' : null}" th:href="@{/productos}"><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i> Inventario</a>
+            <a sec:authorize="hasRole('ADMIN')" class="nav-link" th:classappend="${activo == 'categorias'} ? 'active'" th:attr="aria-current=${activo == 'categorias' ? 'page' : null}" th:href="@{/categorias}"><i class="fa-solid fa-tags" aria-hidden="true"></i> Categorías</a>
+            <a sec:authorize="hasRole('ADMIN')" class="nav-link" th:classappend="${activo == 'usuarios'} ? 'active'" th:attr="aria-current=${activo == 'usuarios' ? 'page' : null}" th:href="@{/usuarios}"><i class="fa-solid fa-users" aria-hidden="true"></i> Usuarios</a>
+            <a sec:authorize="hasRole('ADMIN')" class="nav-link" th:classappend="${activo == 'reportes'} ? 'active'" th:attr="aria-current=${activo == 'reportes' ? 'page' : null}" th:href="@{/ventas/historial}"><i class="fa-solid fa-chart-column" aria-hidden="true"></i> Reportes</a>
+            <a sec:authorize="hasRole('CAJERO')" class="nav-link" th:classappend="${activo == 'cajero'} ? 'active'" th:attr="aria-current=${activo == 'cajero' ? 'page' : null}" th:href="@{/cajero/dashboard}"><i class="fa-solid fa-house" aria-hidden="true"></i> Inicio</a>
+            <a sec:authorize="hasRole('CAJERO')" class="nav-link" th:classappend="${activo == 'ventas'} ? 'active'" th:attr="aria-current=${activo == 'ventas' ? 'page' : null}" th:href="@{/ventas/nueva}"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> Ventas</a>
+        </nav>
+        <form class="mt-auto pt-4" th:action="@{/logout}" method="post">
+            <button class="btn btn-outline-light w-100" type="submit"><i class="fa-solid fa-right-from-bracket me-2" aria-hidden="true"></i>Cerrar Sesión</button>
+        </form>
+    </div>
+</aside>
+</body>
+</html>
+

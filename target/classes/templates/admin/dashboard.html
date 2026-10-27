@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Panel de administración')}"></head>
+<body class="admin-layout">
+<aside th:replace="~{fragments/sidebar :: sidebar('admin')}"></aside>
+<div class="admin-shell">
+    <header th:replace="~{fragments/navbar :: navbar}"></header>
+    <main class="admin-content">
+        <div class="page-heading">
+            <div>
+                <p class="eyebrow">Administración</p>
+                <h1>Panel del administrador</h1>
+                <p class="text-secondary mb-0">Gestiona el catálogo y organiza tu sistema desde un solo lugar.</p>
+            </div>
+        </div>
+        <section class="mb-4" aria-labelledby="estadisticas-title">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <h2 id="estadisticas-title" class="h5 mb-0">Resumen del negocio</h2>
+                <span class="text-secondary small" th:text="|${#temporals.format(fechaResumen, 'dd/MM/yyyy')} · Hora de Lima|"></span>
+            </div>
+            <div class="row g-3">
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <article class="card h-100 border-top border-primary border-3"><div class="card-body p-4">
+                        <div class="d-flex justify-content-between gap-2"><h3 class="h6 text-secondary">Ventas de hoy</h3><i class="fa-solid fa-receipt text-primary fs-4" aria-hidden="true"></i></div>
+                        <p class="display-6 fw-bold mb-1 numeric" th:text="${ventasHoy}">0</p>
+                        <p class="form-text mb-0" th:text="|${totalVentas} ventas registradas en total|"></p>
+                    </div></article>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <article class="card h-100 border-top border-success border-3"><div class="card-body p-4">
+                        <div class="d-flex justify-content-between gap-2"><h3 class="h6 text-secondary">Ingresos de hoy</h3><i class="fa-solid fa-coins text-success fs-4" aria-hidden="true"></i></div>
+                        <p class="h3 fw-bold mb-2 numeric" th:text="|S/ ${#numbers.formatDecimal(ingresosHoy, 1, 'COMMA', 2, 'POINT')}|">S/ 0.00</p>
+                        <p class="form-text mb-0">Ventas registradas durante el día</p>
+                    </div></article>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <article class="card h-100 border-top border-info border-3"><div class="card-body p-4">
+                        <div class="d-flex justify-content-between gap-2"><h3 class="h6 text-secondary">Ingresos totales</h3><i class="fa-solid fa-chart-line text-primary fs-4" aria-hidden="true"></i></div>
+                        <p class="h3 fw-bold mb-2 numeric" th:text="|S/ ${#numbers.formatDecimal(ingresosTotales, 1, 'COMMA', 2, 'POINT')}|">S/ 0.00</p>
+                        <a class="small" th:href="@{/ventas/historial}">Consultar historial</a>
+                    </div></article>
+                </div>
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <article class="card h-100 border-top border-danger border-3"><div class="card-body p-4">
+                        <div class="d-flex justify-content-between gap-2"><h3 class="h6 text-secondary">Stock crítico</h3><i class="fa-solid fa-triangle-exclamation text-danger fs-4" aria-hidden="true"></i></div>
+                        <p class="display-6 fw-bold mb-1 numeric" th:text="${stockCritico}">0</p>
+                        <p class="form-text mb-1" th:text="|Productos con ${limiteStock} unidades o menos|"></p>
+                        <a class="small" th:href="@{/productos}">Revisar inventario</a>
+                    </div></article>
+                </div>
+            </div>
+        </section>
+        <section class="card mb-4" aria-labelledby="grafico-title">
+            <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <h2 id="grafico-title" class="h5 mb-0">Ingresos de los últimos 5 días</h2>
+                <span class="badge badge-soft">Incluye hoy · Soles (S/)</span>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-secondary small">Ventas registradas por día, según la hora de Lima.</p>
+                <div style="position: relative; height: 320px;">
+                    <canvas id="ingresos-chart" role="img" aria-label="Gráfico de barras de ingresos de los últimos cinco días" aria-describedby="grafico-datos">Los importes diarios se muestran en la tabla de datos.</canvas>
+                </div>
+                <details id="grafico-datos" class="mt-3">
+                    <summary class="text-secondary">Ver datos del gráfico</summary>
+                    <div class="table-responsive mt-2">
+                        <table class="table table-sm mb-0">
+                            <caption class="visually-hidden">Ingresos por día en soles</caption>
+                            <thead><tr><th scope="col">Día</th><th scope="col">Fecha</th><th scope="col">Ingresos</th></tr></thead>
+                            <tbody><tr th:each="dia, estado : ${graficoDias}"><th scope="row" th:text="${dia}"></th><td th:text="${graficoFechas[estado.index]}"></td><td th:text="|S/ ${#numbers.formatDecimal(graficoIngresos[estado.index], 1, 'COMMA', 2, 'POINT')}|"></td></tr></tbody>
+                        </table>
+                    </div>
+                </details>
+            </div>
+        </section>
+        <section class="welcome-panel p-4 p-md-5 mb-4" aria-labelledby="bienvenida-title">
+            <p class="text-uppercase small mb-2">Sistema POS</p>
+            <h2 id="bienvenida-title" class="h3">Bienvenido, <span sec:authentication="name">Administrador</span></h2>
+            <p class="mb-4">Mantén tus productos y categorías al día para facilitar el trabajo en caja.</p>
+            <a class="btn btn-light" th:href="@{/productos}"><i class="fa-solid fa-boxes-stacked me-2" aria-hidden="true"></i>Gestionar inventario</a>
+        </section>
+        <section aria-labelledby="accesos-title">
+            <h2 id="accesos-title" class="h5 mb-3">Accesos de administración</h2>
+            <div class="row g-4">
+                <div class="col-12 col-md-6">
+                    <article class="card h-100"><div class="card-body p-4 d-flex flex-column align-items-start">
+                        <i class="fa-solid fa-boxes-stacked fs-3 mb-3 text-primary" aria-hidden="true"></i>
+                        <h3 class="h5">Inventario</h3>
+                        <p class="text-secondary">Consulta productos, precios y existencias.</p>
+                        <a class="btn btn-outline-primary mt-auto" th:href="@{/productos}">Ver productos</a>
+                    </div></article>
+                </div>
+                <div class="col-12 col-md-6">
+                    <article class="card h-100"><div class="card-body p-4 d-flex flex-column align-items-start">
+                        <i class="fa-solid fa-tags fs-3 mb-3 text-primary" aria-hidden="true"></i>
+                        <h3 class="h5">Categorías</h3>
+                        <p class="text-secondary">Organiza el catálogo y registra nuevas categorías.</p>
+                        <a class="btn btn-outline-primary mt-auto" th:href="@{/categorias}">Gestionar categorías</a>
+                    </div></article>
+                </div>
+                <div class="col-12 col-md-6">
+                    <article class="card h-100"><div class="card-body p-4">
+                        <i class="fa-solid fa-users fs-3 mb-3 text-secondary" aria-hidden="true"></i>
+                        <h3 class="h5">Usuarios</h3>
+                        <p class="text-secondary">Registra usuarios y asigna sus roles de acceso.</p>
+                        <a class="btn btn-outline-primary" th:href="@{/usuarios}">Gestionar usuarios</a>
+                    </div></article>
+                </div>
+                <div class="col-12 col-md-6">
+                    <article class="card h-100"><div class="card-body p-4">
+                        <i class="fa-solid fa-chart-column fs-3 mb-3 text-secondary" aria-hidden="true"></i>
+                        <h3 class="h5">Reportes</h3>
+                        <p class="text-secondary">Consulta las ventas registradas, los importes y sus métodos de pago.</p>
+                        <a class="btn btn-outline-primary" th:href="@{/ventas/historial}">Ver historial de ventas</a>
+                    </div></article>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+<script th:inline="javascript">
+(() => {
+    const dias = /*[[${graficoDias}]]*/ [];
+    const fechas = /*[[${graficoFechas}]]*/ [];
+    const ingresos = /*[[${graficoIngresos}]]*/ [];
+    const canvas = document.querySelector('#ingresos-chart');
+    if (!canvas || !window.Chart) return;
+    const moneda = new Intl.NumberFormat('es-PE', { style: 'currency', currency: 'PEN' });
+    new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: dias,
+            datasets: [{ label: 'Ingresos diarios (S/)', data: ingresos,
+                backgroundColor: '#244e79', hoverBackgroundColor: '#142d4e',
+                borderRadius: 6, maxBarThickness: 72 }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? false : { duration: 700 },
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: {
+                    title: items => `${dias[items[0].dataIndex]} · ${fechas[items[0].dataIndex]}`,
+                    label: item => moneda.format(item.parsed.y)
+                } }
+            },
+            scales: {
+                x: { title: { display: true, text: 'Día de la semana' }, grid: { display: false } },
+                y: { beginAtZero: true, title: { display: true, text: 'Ingresos (S/)' },
+                    ticks: { callback: value => moneda.format(value) } }
+            }
+        }
+    });
+})();
+</script>
+</body>
+</html>

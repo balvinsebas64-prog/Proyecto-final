@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Panel del cajero')}"></head>
+<body class="admin-layout"><aside th:replace="~{fragments/sidebar :: sidebar('cajero')}"></aside><div class="admin-shell d-flex flex-column">
+<header th:replace="~{fragments/navbar :: cajeroNavbar}"></header>
+<main class="container flex-grow-1 d-flex align-items-center justify-content-center py-5">
+    <section class="card w-100 text-center" style="max-width: 680px;" aria-labelledby="cajero-title">
+        <div class="card-body p-4 p-md-5">
+            <span class="badge badge-soft mb-3">Panel del cajero</span>
+            <h1 id="cajero-title" class="h2">Bienvenido, <span sec:authentication="name">Cajero</span></h1>
+            <p class="text-secondary mb-4">Todo listo para tu próxima venta. Busca productos, agrega las cantidades y registra el pago.</p>
+            <i class="fa-solid fa-cash-register display-3 mb-4 text-primary" aria-hidden="true"></i>
+            <a class="btn btn-primary btn-lg d-block py-4 fs-4" th:href="@{/ventas/nueva}">Ir a Punto de Venta <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i></a>
+            <p class="form-text mt-3 mb-0">El stock se actualiza al confirmar cada venta.</p>
+        </div>
+    </section>
+</main>
+</div><th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>
+

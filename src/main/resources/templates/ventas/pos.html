@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Punto de venta')}"></head>
+<body class="admin-layout"><aside th:replace="~{fragments/sidebar :: sidebar('ventas')}"></aside><div class="admin-shell">
+    <header th:replace="~{fragments/navbar :: cajeroNavbar}"></header>
+    <main class="admin-content">
+        <div class="page-heading">
+            <div><p class="eyebrow">Ventas</p><h1>Punto de venta</h1><p class="text-secondary mb-0">Busca productos, arma el carrito y registra el cobro.</p></div>
+        </div>
+        <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+        <div th:if="${ventaExitosa != null}" id="venta-exitosa-aviso" class="alert alert-success" role="status" th:attr="data-next-url=@{/ventas/nueva}">
+            <span th:text="|Venta #${ventaExitosa} registrada correctamente.|"></span>
+            <a class="alert-link ms-2" th:href="@{/ventas/nueva}">Siguiente venta</a>
+        </div>
+        <div class="row g-4">
+            <div class="col-12 col-xl-6">
+                <section class="card" aria-labelledby="productos-title">
+                    <div class="card-header"><h2 id="productos-title" class="h5 mb-0">Productos disponibles</h2></div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/ventas/nueva}" method="get" class="mb-4">
+                            <label for="q" class="form-label">Buscar por nombre o código de barras</label>
+                            <div class="input-group">
+                                <input id="q" name="q" th:value="${q}" class="form-control" placeholder="Ej. Agua mineral">
+                                <button class="btn btn-primary" type="submit">Buscar</button>
+                            </div>
+                        </form>
+                        <p th:if="${#lists.isEmpty(productos)}" class="text-secondary">No se encontraron productos.</p>
+                        <div th:each="producto : ${productos}" class="border rounded-3 p-3 mb-3">
+                            <h3 class="h6" th:text="${producto.nombre}"></h3>
+                            <div class="d-flex justify-content-between gap-2 mb-3">
+                                <span class="fw-semibold" th:text="|S/ ${#numbers.formatDecimal(producto.precio, 1, 'COMMA', 2, 'POINT')}|"></span>
+                                <span class="badge badge-soft" th:text="|Stock: ${producto.stock}|"></span>
+                            </div>
+                            <form th:action="@{/ventas/carrito/agregar}" method="post" class="d-flex align-items-end gap-2">
+                                <input type="hidden" name="productoId" th:value="${producto.id}">
+                                <div class="flex-grow-1">
+                                    <label th:for="|cantidad-${producto.id}|" class="form-label">Cantidad</label>
+                                    <input th:id="|cantidad-${producto.id}|" name="cantidad" type="number" class="form-control" value="1" min="1" th:max="${producto.stock}" th:disabled="${producto.stock == null or producto.stock <= 0}" required>
+                                </div>
+                                <button class="btn btn-outline-primary" type="submit" th:disabled="${producto.stock == null or producto.stock <= 0}"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i>Agregar</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div class="col-12 col-xl-6">
+                <section class="card" aria-labelledby="carrito-title">
+                    <div class="card-header"><h2 id="carrito-title" class="h5 mb-0"><i class="fa-solid fa-cart-shopping me-2" aria-hidden="true"></i>Carrito de compras</h2></div>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <caption class="visually-hidden">Productos y cantidades de la venta actual</caption>
+                            <thead><tr><th scope="col">Producto</th><th scope="col">Precio</th><th scope="col">Cant.</th><th scope="col">Subtotal</th><th scope="col"><span class="visually-hidden">Acciones</span></th></tr></thead>
+                            <tbody>
+                            <tr th:each="linea : ${lineas}">
+                                <td th:text="${linea.nombre}"></td>
+                                <td class="numeric" th:text="${#numbers.formatDecimal(linea.precio, 1, 'COMMA', 2, 'POINT')}"></td>
+                                <td th:text="${linea.cantidad}"></td>
+                                <td class="numeric fw-semibold" th:text="${#numbers.formatDecimal(linea.subtotal, 1, 'COMMA', 2, 'POINT')}"></td>
+                                <td><form th:action="@{/ventas/carrito/quitar}" method="post"><input type="hidden" name="productoId" th:value="${linea.id}"><button class="btn btn-outline-danger btn-sm" type="submit" th:attr="aria-label=|Quitar ${linea.nombre}|"><i class="fa-solid fa-trash" aria-hidden="true"></i></button></form></td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(lineas)}"><td colspan="5" class="empty-state">Agrega productos para comenzar la venta.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-body p-4 border-top">
+                        <div class="d-flex justify-content-between align-items-center mb-3 gap-2"><span class="fw-semibold">TOTAL A PAGAR</span><strong class="fs-2 numeric" th:text="|S/ ${#numbers.formatDecimal(total, 1, 'COMMA', 2, 'POINT')}|"></strong></div>
+                        <p class="form-text">El stock y los precios vigentes se verifican al cobrar. Las cantidades no reservan existencias.</p>
+                        <form id="cobrar-form" th:action="@{/ventas/procesar}" method="post">
+                            <input type="hidden" name="token" th:value="${token}">
+                            <label for="metodoPago" class="form-label">Método de pago</label>
+                            <select id="metodoPago" name="metodoPago" class="form-select mb-4" required>
+                                <option value="Efectivo">Efectivo</option><option value="Tarjeta">Tarjeta</option><option value="Yape">Yape</option>
+                            </select>
+                            <button class="btn btn-primary btn-lg w-100 py-3 fs-4" type="submit" th:disabled="${#lists.isEmpty(lineas)}"><i class="fa-solid fa-cash-register me-2" aria-hidden="true"></i>COBRAR</button>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+<script th:src="@{/js/pos.js}" src="/js/pos.js"></script>
+</body>
+</html>
+
+

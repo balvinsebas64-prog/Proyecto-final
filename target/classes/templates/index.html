@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Inicio')}"></head>
+<body class="admin-layout">
+<aside th:replace="~{fragments/sidebar :: sidebar('inicio')}"></aside>
+<div class="admin-shell">
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<main class="admin-content">
+    <p class="eyebrow">Panel de inicio</p>
+    <section class="welcome-panel" aria-labelledby="welcome-title">
+        <div class="card-body p-4 p-md-5">
+            <h1 id="welcome-title" class="display-6 fw-semibold text-white">Bienvenido al Sistema POS</h1>
+            <p class="lead mb-4">Organiza tu catálogo y consulta las existencias desde un solo lugar.</p>
+            <div class="d-flex flex-wrap gap-3">
+                <a class="btn btn-light" href="/productos" th:href="@{/productos}">Ver productos</a>
+                <a class="btn btn-outline-light" href="/productos/nuevo" th:href="@{/productos/nuevo}">+ Nuevo producto</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="mt-5" aria-labelledby="accesos-title">
+        <h2 id="accesos-title" class="h5 mb-3">Accesos rápidos</h2>
+        <div class="row g-4">
+            <div class="col-12 col-md-6">
+                <article class="card h-100">
+                    <div class="card-body p-4 d-flex flex-column align-items-start">
+                        <span class="badge badge-soft mb-3">Inventario</span>
+                        <h3 class="h5">Catálogo de productos</h3>
+                        <p class="text-secondary">Consulta precios, categorías y existencias de tus productos.</p>
+                        <a class="btn btn-outline-primary mt-auto" href="/productos" th:href="@{/productos}">Abrir catálogo</a>
+                    </div>
+                </article>
+            </div>
+            <div class="col-12 col-md-6">
+                <article class="card h-100">
+                    <div class="card-body p-4 d-flex flex-column align-items-start">
+                        <span class="badge badge-soft mb-3">Registro</span>
+                        <h3 class="h5">Agrega un producto</h3>
+                        <p class="text-secondary">Registra un nuevo artículo con su precio y stock inicial.</p>
+                        <a class="btn btn-outline-primary mt-auto" href="/productos/nuevo" th:href="@{/productos/nuevo}">Registrar producto</a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+</main>
+
+</div><th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>
+

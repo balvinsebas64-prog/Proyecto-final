@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Categorías')}"></head>
+<body class="admin-layout">
+<aside th:replace="~{fragments/sidebar :: sidebar('categorias')}"></aside>
+<div class="admin-shell">
+    <header th:replace="~{fragments/navbar :: navbar}"></header>
+    <main class="admin-content">
+        <div class="page-heading">
+            <div>
+                <p class="eyebrow">Gestión de inventario</p>
+                <h1>Categorías</h1>
+                <p class="text-secondary mb-0">Organiza tus productos por categoría.</p>
+            </div>
+            <a class="btn btn-outline-primary" th:href="@{/productos/nuevo}">Nuevo producto</a>
+        </div>
+
+        <div th:if="${exito}" class="alert alert-success" role="status" th:text="${exito}"></div>
+
+        <section class="card mb-4" aria-labelledby="nueva-title">
+            <div class="card-header"><h2 id="nueva-title" class="h6 mb-0">Nueva categoría</h2></div>
+            <div class="card-body p-4">
+                <form th:action="@{/categorias/guardar}" method="post" class="row g-3 align-items-end">
+                    <div class="col-12 col-md-8 col-xl-9">
+                        <label for="nombre" class="form-label">Nombre de la categoría *</label>
+                        <input id="nombre" name="nombre" class="form-control" type="text"
+                               th:value="${nombre}" th:classappend="${error != null} ? 'is-invalid'"
+                               th:attr="aria-invalid=${error != null}"
+                               aria-describedby="nombre-help nombre-error"
+                               placeholder="Ej. Bebidas" maxlength="100" required>
+                        <div id="nombre-error" class="invalid-feedback" th:text="${error}"></div>
+                    </div>
+                    <div class="col-12 col-md-4 col-xl-3">
+                        <button class="btn btn-primary w-100" type="submit"><i class="fa-solid fa-plus me-2" aria-hidden="true"></i>Guardar categoría</button>
+                    </div>
+                    <div id="nombre-help" class="col-12 form-text">La categoría estará disponible al abrir o recargar el formulario de productos.</div>
+                </form>
+            </div>
+        </section>
+
+        <section class="card" aria-labelledby="lista-title">
+            <div class="card-header d-flex justify-content-between align-items-center gap-3">
+                <h2 id="lista-title" class="h6 mb-0">Categorías registradas</h2>
+                <span class="badge badge-soft" th:text="|${#lists.size(categorias)} registros|"></span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle mb-0">
+                    <caption class="visually-hidden">Listado de categorías disponibles para productos</caption>
+                    <thead><tr><th scope="col">ID</th><th scope="col">Nombre</th></tr></thead>
+                    <tbody>
+                    <tr th:each="categoria : ${categorias}">
+                        <td class="text-secondary" th:text="${categoria.id}"></td>
+                        <td class="fw-semibold" th:text="${categoria.nombre}"></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(categorias)}">
+                        <td colspan="2" class="empty-state">
+                            <p class="h5">Aún no hay categorías</p>
+                            <p class="text-secondary mb-0">Agrega la primera categoría con el formulario de arriba.</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

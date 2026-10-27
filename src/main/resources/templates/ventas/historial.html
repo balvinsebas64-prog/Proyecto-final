@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Historial de ventas')}"></head>
+<body class="admin-layout">
+<aside th:replace="~{fragments/sidebar :: sidebar('reportes')}"></aside>
+<div class="admin-shell">
+    <header th:replace="~{fragments/navbar :: navbar}"></header>
+    <main class="admin-content">
+        <div class="page-heading">
+            <div><p class="eyebrow">Reportes</p><h1>Historial de ventas</h1><p class="text-secondary mb-0">Consulta las operaciones registradas en el punto de venta.</p></div>
+            <a class="btn btn-outline-secondary" th:href="@{/admin/dashboard}">Volver al panel</a>
+        </div>
+        <p class="alert alert-info">El punto de venta todavía no registra datos de clientes. La columna Cliente muestra «No registrado»; Cajero identifica al usuario que realizó la venta.</p>
+        <section class="card" aria-labelledby="historial-title">
+            <div class="card-header d-flex justify-content-between align-items-center gap-3">
+                <h2 id="historial-title" class="h6 mb-0">Ventas registradas</h2>
+                <span class="badge badge-soft" th:text="|${#lists.size(ventas)} registros|"></span>
+            </div>
+            <div class="table-responsive">
+                <table id="historial-table" class="table table-striped table-hover align-middle mb-0 w-100">
+                    <caption class="visually-hidden">Historial de ventas con fecha, cliente, cajero, método de pago y total en soles</caption>
+                    <thead><tr><th scope="col">N.º</th><th scope="col">Fecha</th><th scope="col">Cliente</th><th scope="col">Cajero</th><th scope="col">Método de pago</th><th scope="col" class="text-end">Total</th></tr></thead>
+                    <tbody>
+                    <tr th:each="venta : ${ventas}">
+                        <td th:text="${venta.id}"></td>
+                        <td class="text-nowrap" th:attr="data-order=${venta.fecha}" th:text="${#temporals.format(venta.fecha, 'dd/MM/yyyy HH:mm:ss')}"></td>
+                        <td class="text-secondary">No registrado</td>
+                        <td th:text="${venta.usuario != null ? venta.usuario.nombre : 'Usuario no disponible'}"></td>
+                        <td><span class="badge badge-soft" th:text="${venta.metodoPago}"></span></td>
+                        <td class="text-end numeric fw-semibold" th:attr="data-order=${venta.total}" th:text="|S/ ${#numbers.formatDecimal(venta.total, 1, 'COMMA', 2, 'POINT')}|"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+<th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>

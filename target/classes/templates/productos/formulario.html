@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Inventario')}"></head>
+<body class="admin-layout">
+<aside th:replace="~{fragments/sidebar :: sidebar('inventario')}"></aside>
+<div class="admin-shell">
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+<main class="admin-content">
+
+<div class="page-heading">
+ <div><p class="eyebrow">Gestión de inventario</p><h1 th:text="${producto.id == null ? 'Nuevo producto' : 'Editar producto'}">Producto</h1><p class="text-secondary mb-0">Completa la información del producto.</p></div>
+ <a class="btn btn-outline-secondary" th:href="@{/productos}">Volver al listado</a>
+</div>
+<form th:action="@{/productos/guardar}" th:object="${producto}" method="post" class="row g-4">
+ <input type="hidden" th:field="*{id}">
+ <div class="col-lg-8">
+  <section class="card h-100" aria-labelledby="datos-title">
+   <div class="card-header"><h2 id="datos-title" class="h6 mb-0">Información del producto</h2></div>
+   <div class="card-body p-4">
+    <p class="form-text mt-0 mb-4">Los campos marcados con * son obligatorios.</p>
+    <div class="mb-4">
+     <label for="nombre" class="form-label">Nombre del producto *</label>
+     <input id="nombre" th:field="*{nombre}" class="form-control" maxlength="150" required placeholder="Ej. Cuaderno universitario">
+    </div>
+    <div class="mb-4">
+     <label for="codigoBarras" class="form-label">Código de barras</label>
+     <input id="codigoBarras" th:field="*{codigoBarras}" class="form-control" maxlength="50" aria-describedby="codigo-help" placeholder="Código único del producto">
+     <div id="codigo-help" class="form-text">Opcional. Si lo ingresas, debe ser único.</div>
+    </div>
+    <div>
+     <label for="categoria" class="form-label">Categoría</label>
+     <select id="categoria" th:field="*{categoria}" class="form-select" aria-describedby="categoria-help">
+      <option value="">Sin categoría</option>
+      <option th:each="categoria : ${categorias}" th:value="${categoria.id}" th:text="${categoria.nombre}"></option>
+     </select>
+     <div id="categoria-help" class="form-text">Puedes registrar el producto sin categoría.</div>
+     <p th:if="${#lists.isEmpty(categorias)}" class="form-text mb-0">Aún no hay categorías disponibles. <a th:href="@{/categorias}">Crear una categoría</a> antes de completar el producto.</p>
+    </div>
+   </div>
+  </section>
+ </div>
+ <div class="col-lg-4">
+  <section class="card h-100" aria-labelledby="inventario-title">
+   <div class="card-header"><h2 id="inventario-title" class="h6 mb-0">Precio y existencias</h2></div>
+   <div class="card-body p-4">
+    <div class="mb-4">
+     <label for="precio" class="form-label">Precio de venta *</label>
+     <input type="number" id="precio" th:field="*{precio}" class="form-control" min="0" max="99999999.99" step="0.01" placeholder="0.00" required>
+    </div>
+    <div>
+     <label for="stock" class="form-label">Stock inicial *</label>
+     <input type="number" id="stock" th:field="*{stock}" class="form-control" min="0" max="2147483647" step="1" placeholder="0" required>
+    </div>
+   </div>
+  </section>
+ </div>
+ <div class="col-12 d-flex flex-wrap gap-2 justify-content-end">
+  <a class="btn btn-outline-secondary" th:href="@{/productos}">Cancelar</a>
+  <button class="btn btn-primary" type="submit">Guardar producto</button>
+ </div>
+</form>
+</main>
+</div><th:block th:replace="~{fragments/scripts :: scripts}"></th:block>
+</body>
+</html>
+
